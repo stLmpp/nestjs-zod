@@ -1,5 +1,6 @@
 import { UnknownSchema } from './types';
 import type * as z3 from 'zod/v3';
+import type { ZodType } from 'zod';
 import {
   toJSONSchema,
   globalRegistry,
@@ -25,23 +26,13 @@ import { walkJsonSchema } from './utils';
 import { zodV3ToOpenAPI } from './zodV3ToOpenApi';
 import { ioSymbol } from './symbols';
 
-/**
- * `input`/`output` from `zod/v4/core` fall back to `unknown` for schemas
- * that don't expose v4-style `_zod` internals (zod v3 schemas, zod-mini
- * schemas, or duck-typed `UnknownSchema` objects). For those, fall back to
- * the schema's `parse` return type, same as before `Type` existed.
- */
 type ZodDtoInstance<
-  TSchema extends UnknownSchema,
+  TSchema extends ZodType,
   Type extends 'input' | 'output',
-> = TSchema extends { _zod: { input: unknown; output: unknown } }
-  ? Type extends 'output'
-    ? output<TSchema>
-    : input<TSchema>
-  : ReturnType<TSchema['parse']>;
+> = Type extends 'output' ? output<TSchema> : input<TSchema>;
 
 export interface ZodDto<
-  TSchema extends UnknownSchema = UnknownSchema,
+  TSchema extends ZodType = ZodType,
   TCodec extends boolean = boolean,
   Type extends 'input' | 'output' = 'input',
 > {
@@ -50,12 +41,12 @@ export interface ZodDto<
   schema: TSchema;
   codec: TCodec;
   create(input: unknown): ZodDtoInstance<TSchema, Type>;
-  Output: ZodDto<UnknownSchema, TCodec>;
+  Output: ZodDto<ZodType, TCodec>;
   _OPENAPI_METADATA_FACTORY(): unknown;
 }
 
 export function createZodDto<
-  TSchema extends UnknownSchema,
+  TSchema extends ZodType,
   TCodec extends boolean = false,
   Type extends 'input' | 'output' = 'input',
 >(schema: TSchema, options?: { codec?: TCodec; type?: Type }) {
@@ -362,7 +353,7 @@ function getSchemaMetadata(jsonSchema: JSONSchema.BaseSchema) {
 
 export function isZodDto(
   metatype: unknown,
-): metatype is ZodDto<UnknownSchema, boolean, 'input' | 'output'> {
+): metatype is ZodDto<ZodType, boolean, 'input' | 'output'> {
   return Boolean(
     metatype &&
     (typeof metatype === 'object' || typeof metatype === 'function') &&

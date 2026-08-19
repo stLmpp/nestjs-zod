@@ -4,7 +4,7 @@ import { ZodSerializerDto } from './serializer';
 import { ZodDto } from './dto';
 import { assert } from './assert';
 import { input, output } from 'zod/v4/core';
-import { RequiredBy, UnknownSchema } from './types';
+import type { ZodType } from 'zod';
 import { ioSymbol } from './symbols';
 
 let ApiResponse: typeof import('@nestjs/swagger').ApiResponse | undefined;
@@ -56,7 +56,7 @@ try {
  *   return [{ id: '1' }, { id: '2' }];
  * }
  */
-export function ZodResponse<TSchema extends UnknownSchema>({
+export function ZodResponse<TSchema extends ZodType>({
   status,
   description,
   type,
@@ -74,9 +74,7 @@ export function ZodResponse<TSchema extends UnknownSchema>({
     'value'
   >,
 ) => void;
-export function ZodResponse<
-  TSchema extends RequiredBy<UnknownSchema, 'array'>,
->({
+export function ZodResponse<TSchema extends ZodType>({
   status,
   description,
   type,
@@ -96,7 +94,7 @@ export function ZodResponse<
     'value'
   >,
 ) => void;
-export function ZodResponse<TSchema extends UnknownSchema>({
+export function ZodResponse<TSchema extends ZodType>({
   status,
   description,
   type,
@@ -114,9 +112,7 @@ export function ZodResponse<TSchema extends UnknownSchema>({
     'value'
   >,
 ) => void;
-export function ZodResponse<
-  TSchema extends RequiredBy<UnknownSchema, 'array'>,
->({
+export function ZodResponse<TSchema extends ZodType>({
   status,
   description,
   type,
@@ -134,7 +130,7 @@ export function ZodResponse<
     'value'
   >,
 ) => void;
-export function ZodResponse<TSchema extends UnknownSchema>({
+export function ZodResponse<TSchema extends ZodType>({
   status,
   description,
   type,

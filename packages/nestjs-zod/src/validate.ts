@@ -6,15 +6,15 @@ import { UnknownSchema } from './types';
  * @deprecated `validate` will be removed in a future version.  It is
  * recommended to use `.parse` directly
  */
-export function validate<TSchema extends UnknownSchema>(
+export function validate(
   value: unknown,
-  schemaOrDto: TSchema | ZodDto<TSchema, boolean>,
+  schemaOrDto: UnknownSchema | ZodDto,
   createValidationException: ZodExceptionCreator = createZodValidationException,
-): ReturnType<TSchema['parse']> {
+): unknown {
   const schema = isZodDto(schemaOrDto) ? schemaOrDto.schema : schemaOrDto;
 
   try {
-    return schema.parse(value) as ReturnType<TSchema['parse']>;
+    return schema.parse(value);
   } catch (error) {
     throw createValidationException(error);
   }

@@ -129,7 +129,7 @@ testMany(
       .send({ id: '1' })
       .expect(202);
   },
-  ['latest', 'latest/mini', '4.0.0'],
+  ['latest', '4.0.0'],
 );
 
 testMany(
@@ -249,39 +249,6 @@ testMany(
 );
 
 testMany(
-  'throws error if trying to use array syntax with version of zod that does not support it',
-  async ({ z }) => {
-    class BookDto extends createZodDto(
-      z.object({
-        id: z.string(),
-      }),
-    ) {}
-
-    expect(() => {
-      @Controller('books')
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      class BookController {
-        constructor() {}
-
-        @Get()
-        @ZodResponse({
-          status: 200,
-          description: 'Get books',
-          // @ts-expect-error - Should be a typescript error here because zod mini schemas don't have an `array` method
-          type: [BookDto],
-        })
-        getBooks() {
-          return [];
-        }
-      }
-    }).toThrow(
-      '[nestjs-zod] ZodSerializerDto was used with array syntax (e.g. `ZodSerializerDto([MyDto])`) but the DTO schema does not have an array method',
-    );
-  },
-  ['latest/mini'],
-);
-
-testMany(
   'supports codecs',
   async ({ z }) => {
     const stringToDate = z.codec(z.iso.datetime(), z.date(), {
@@ -390,7 +357,7 @@ testMany(
       ),
     );
   },
-  ['4.0.0', 'latest', 'latest/mini'],
+  ['4.0.0', 'latest'],
 );
 
 describe('issue#398 - enforce `passthrough: true` when using `@Res`', () => {

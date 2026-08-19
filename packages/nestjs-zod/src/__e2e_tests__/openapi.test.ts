@@ -105,8 +105,6 @@ testMany(
     'latest - dirty',
     '4.0.0',
     '4.0.0 - dirty',
-    'latest/mini',
-    'latest/mini - dirty',
   ],
 );
 
@@ -151,8 +149,6 @@ testMany(
     'latest - dirty',
     '4.0.0',
     '4.0.0 - dirty',
-    'latest/mini',
-    'latest/mini - dirty',
   ],
 );
 

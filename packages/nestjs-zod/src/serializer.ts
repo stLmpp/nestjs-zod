@@ -81,7 +81,7 @@ export function createZodSerializerInterceptor({
 
                 try {
                   return arrSchema.encode(
-                    res,
+                    res as unknown[],
                     reportInput !== undefined ? { reportInput } : undefined,
                   );
                 } catch (error) {

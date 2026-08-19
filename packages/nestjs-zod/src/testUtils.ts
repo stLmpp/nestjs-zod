@@ -107,11 +107,17 @@ export async function setupApp(
 type BaseVersion = '3' | '4.0.0' | 'latest' | 'latest/mini';
 type DirtyVersion = `${BaseVersion} - dirty`;
 type Version = BaseVersion | DirtyVersion;
+/**
+ * `createZodDto` only accepts real zod v4 (`ZodType`) schemas now, so `'3'`
+ * and `'latest/mini'` are opt-in only (pass them explicitly) — they're
+ * excluded from `testMany`'s default version sweep.
+ */
+type DefaultVersion = '4.0.0' | 'latest';
 type ZForVersions<V extends Version> = 'latest/mini' extends V
   ? typeof zMini
   : typeof z4;
 
-export function testMany<V extends Version = BaseVersion>(
+export function testMany<V extends Version = DefaultVersion>(
   name: string,
   fn:
     | (({
@@ -122,7 +128,7 @@ export function testMany<V extends Version = BaseVersion>(
         cleanUp: boolean;
       }) => Promise<void>)
     | (({ z, cleanUp }: { z: ZForVersions<V>; cleanUp: boolean }) => void),
-  versions: V[] = ['3', '4.0.0', 'latest', 'latest/mini'] as V[],
+  versions: V[] = ['4.0.0', 'latest'] as V[],
 ) {
   describe(name, () => {
     beforeEach(() => {
