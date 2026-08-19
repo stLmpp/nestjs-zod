@@ -63,7 +63,7 @@ export function ZodResponse<TSchema extends UnknownSchema>({
 }: {
   status?: number;
   description?: string;
-  type: ZodDto<TSchema, true>;
+  type: ZodDto<TSchema, true, 'input' | 'output'>;
 }): (
   target: object,
   propertyKey?: string | symbol,
@@ -83,7 +83,7 @@ export function ZodResponse<
 }: {
   status?: number;
   description?: string;
-  type: [ZodDto<TSchema, true>];
+  type: [ZodDto<TSchema, true, 'input' | 'output'>];
 }): (
   target: object,
   propertyKey?: string | symbol,
@@ -103,7 +103,7 @@ export function ZodResponse<TSchema extends UnknownSchema>({
 }: {
   status?: number;
   description?: string;
-  type: ZodDto<TSchema, false>;
+  type: ZodDto<TSchema, false, 'input' | 'output'>;
 }): (
   target: object,
   propertyKey?: string | symbol,
@@ -123,7 +123,7 @@ export function ZodResponse<
 }: {
   status?: number;
   description?: string;
-  type: [ZodDto<TSchema, false>];
+  type: [ZodDto<TSchema, false, 'input' | 'output'>];
 }): (
   target: object,
   propertyKey?: string | symbol,
@@ -141,7 +141,9 @@ export function ZodResponse<TSchema extends UnknownSchema>({
 }: {
   status?: number;
   description?: string;
-  type: ZodDto<TSchema, boolean> | [ZodDto<TSchema, boolean>];
+  type:
+    | ZodDto<TSchema, boolean, 'input' | 'output'>
+    | [ZodDto<TSchema, boolean, 'input' | 'output'>];
 }): (
   target: object,
   propertyKey?: string | symbol,

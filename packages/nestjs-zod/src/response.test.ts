@@ -296,6 +296,7 @@ testMany(
       }),
       {
         codec: true,
+        type: 'output',
       },
     ) {}
 

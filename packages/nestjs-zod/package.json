@@ -1,7 +1,7 @@
 {
-  "name": "nestjs-zod",
+  "name": "@stlmpp/nestjs-zod",
   "description": "All NestJS + Zod utilities you need",
-  "version": "0.0.0-set-by-ci",
+  "version": "1.0.0",
   "main": "./dist/index.cjs",
   "exports": {
     ".": {
@@ -36,7 +36,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:BenLorantfy/nestjs-zod.git",
+    "url": "git@github.com:stLmpp/nestjs-zod.git",
     "directory": "packages/nestjs-zod"
   },
   "author": "Ben Lorantfy <ben@lorantfy.com>",
