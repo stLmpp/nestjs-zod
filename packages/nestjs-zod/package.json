@@ -61,11 +61,11 @@
     "@golevelup/ts-jest": "^3.0.0",
     "@ibm-cloud/openapi-ruleset": "^1.33.13",
     "@nest-zod/z": "workspace:*",
-    "@nestjs/common": "^11.1.5",
-    "@nestjs/core": "^11.1.5",
-    "@nestjs/swagger": "^11.2.0",
+    "@nestjs/common": "^12.1.0",
+    "@nestjs/core": "^12.1.0",
+    "@nestjs/swagger": "^12.0.2",
     "@nestjs/swagger-v7": "npm:@nestjs/swagger@7.4.2",
-    "@nestjs/testing": "^11.1.28",
+    "@nestjs/testing": "^12.1.0",
     "@stoplight/spectral-core": "^1.23.1",
     "@stoplight/spectral-rulesets": "^1.22.7",
     "@types/express": "^5.0.6",
@@ -97,8 +97,8 @@
     "zod-v4_0_0": "npm:zod@4.0.0"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.0.0 || ^11.0.0",
-    "@nestjs/swagger": "^7.4.2 || ^8.0.0 || ^11.0.0",
+    "@nestjs/common": "^10.0.0 || ^11.0.0 || ^12.0.0",
+    "@nestjs/swagger": "^7.4.2 || ^8.0.0 || ^11.0.0 || ^12.0.0",
     "rxjs": "^7.0.0",
     "zod": "^3.25.0 || ^4.0.0"
   },
