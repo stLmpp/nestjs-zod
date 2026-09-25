@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createMock } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-vitest';
 import { CallHandler, Controller, ExecutionContext, Get } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { lastValueFrom, of } from 'rxjs';
@@ -67,7 +67,7 @@ testMany(
     const interceptor = new ZodSerializerInterceptor(reflector);
 
     const userObservable = interceptor.intercept(context, handler);
-    expect(lastValueFrom(userObservable)).rejects.toBeInstanceOf(
+    await expect(lastValueFrom(userObservable)).rejects.toBeInstanceOf(
       ZodSerializationException,
     );
   },
@@ -86,7 +86,7 @@ test('interceptor should not strip out password if no UserDto is defined', async
   });
 
   const reflector = createMock<Reflector>({
-    getAllAndOverride: jest.fn(),
+    getAllAndOverride: vi.fn(),
   });
 
   const interceptor = new ZodSerializerInterceptor(reflector);

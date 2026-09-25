@@ -24,7 +24,7 @@
     "@nestjs/core": "^11.1.5",
     "@nestjs/platform-express": "^11.1.5",
     "@nestjs/swagger": "^11.2.0",
-    "nestjs-zod": "workspace:*",
+    "nestjs-zod": "workspace:@stlmpp/nestjs-zod@*",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "4.4.3"
@@ -55,7 +55,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.66.0"
+    "typescript-eslint": "^8.67.0"
   },
   "jest": {
     "moduleFileExtensions": [

@@ -20,7 +20,6 @@ import {
 import z from 'zod/v4';
 import { createZodDto } from '../dto';
 import { SwaggerModule } from '@nestjs/swagger';
-import { SwaggerModule as SwaggerModuleV7 } from '@nestjs/swagger-v7';
 import { cleanupOpenApiDoc } from '../cleanupOpenApiDoc';
 import get from 'lodash/get';
 import { PREFIX } from '../const';
@@ -98,14 +97,7 @@ testMany(
     expect(JSON.stringify(doc)).not.toContain(PREFIX);
     expect(await getOpenApiErrors(doc, '3.0')).toHaveLength(0);
   },
-  [
-    '3',
-    '3 - dirty',
-    'latest',
-    'latest - dirty',
-    '4.0.0',
-    '4.0.0 - dirty',
-  ],
+  ['3', '3 - dirty', 'latest', 'latest - dirty', '4.0.0', '4.0.0 - dirty'],
 );
 
 testMany(
@@ -142,14 +134,7 @@ testMany(
     expect(JSON.stringify(doc)).not.toContain(PREFIX);
     expect(await getOpenApiErrors(doc, '3.0')).toHaveLength(0);
   },
-  [
-    '3',
-    '3 - dirty',
-    'latest',
-    'latest - dirty',
-    '4.0.0',
-    '4.0.0 - dirty',
-  ],
+  ['3', '3 - dirty', 'latest', 'latest - dirty', '4.0.0', '4.0.0 - dirty'],
 );
 
 testMany(
@@ -3412,48 +3397,6 @@ describe('issue#368', () => {
   );
 });
 
-describe('issue#371 - optional object properties in @nestjs/swagger version 7', () => {
-  testMany(
-    'does not include optional object as a required field',
-    async ({ z }) => {
-      class BodyDto extends createZodDto(
-        z.object({
-          name: z.string(),
-          filter: z
-            .object({
-              age: z.number(),
-            })
-            .optional(),
-        }),
-      ) {}
-
-      @Controller()
-      class TestController {
-        constructor() {}
-
-        @Post()
-        create(@Body() _body: BodyDto) {
-          return {};
-        }
-      }
-
-      const doc = await getSwaggerDoc(TestController, {
-        swaggerVersion: '7',
-      });
-
-      expect(get(doc, 'components.schemas.BodyDto.required')).toEqual(['name']);
-      expect(
-        get(doc, 'components.schemas.BodyDto.properties.filter'),
-      ).not.toHaveProperty('selfRequired');
-      expect(JSON.stringify(doc)).not.toContain(PREFIX);
-
-      expect(await getOpenApiErrors(doc, '3.0')).toHaveLength(0);
-      expect(await getOpenApiErrors(doc, '3.1')).toHaveLength(0);
-    },
-    ['4.0.0', 'latest'],
-  );
-});
-
 async function createApp(controllerClass: Type<unknown>) {
   @Module({
     imports: [],
@@ -3474,18 +3417,14 @@ async function getSwaggerDoc(
   {
     cleanUp = true,
     version,
-    swaggerVersion,
   }: {
     cleanUp?: boolean;
     version?: '3.1' | '3.0' | 'auto';
-    swaggerVersion?: '7' | 'default';
   } = {},
 ) {
   const app = await createApp(controllerClass);
 
-  const doc = (
-    swaggerVersion === '7' ? SwaggerModuleV7 : SwaggerModule
-  ).createDocument(app, new DocumentBuilder().build());
+  const doc = SwaggerModule.createDocument(app, new DocumentBuilder().build());
   if (cleanUp) {
     // @ts-expect-error - FIXME
     return cleanupOpenApiDoc(doc, { version });
