@@ -1,7 +1,7 @@
 {
   "name": "@stlmpp/nestjs-zod",
   "description": "All NestJS + Zod utilities you need",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "./dist/index.cjs",
   "exports": {
     ".": {
