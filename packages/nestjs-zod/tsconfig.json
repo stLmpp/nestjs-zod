@@ -22,6 +22,7 @@
     "declarationDir": "./dist",
     "baseUrl": "./",
     "outDir": "./dist",
+    "types": ["vitest/globals"],
     "typeRoots": [
       "./node_modules/@types"
     ],

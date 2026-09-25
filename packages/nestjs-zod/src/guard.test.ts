@@ -1,4 +1,4 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-vitest';
 import { ExecutionContext } from '@nestjs/common';
 import { createZodDto } from './dto';
 import { ZodValidationException } from './exception';

@@ -138,7 +138,8 @@ export function testMany<V extends Version = DefaultVersion>(
     });
 
     afterEach(() => {
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
+      vi.mocked(zodV4Core.toJSONSchema).mockReset();
     });
 
     test.each(versions)('%s', (version) => {
@@ -165,22 +166,18 @@ export function testMany<V extends Version = DefaultVersion>(
       };
       const toJSONSchemaMock = versionedToJSONSchema[baseVersion];
       if (toJSONSchemaMock) {
-        jest
-          .spyOn(zodV4Core, 'toJSONSchema')
-          .mockImplementation(toJSONSchemaMock);
+        vi.mocked(zodV4Core.toJSONSchema).mockImplementation(toJSONSchemaMock);
       }
       const globalRegistryMock = versionedGlobalRegistry[baseVersion];
       if (
         globalRegistryMock &&
         globalRegistryMock !== zodV4Core.globalRegistry
       ) {
-        jest
-          .spyOn(zodV4Core.globalRegistry, 'get')
-          .mockImplementation((schema) =>
-            globalRegistryMock.get(
-              schema as Parameters<typeof globalRegistryMock.get>[0],
-            ),
-          );
+        vi.spyOn(zodV4Core.globalRegistry, 'get').mockImplementation((schema) =>
+          globalRegistryMock.get(
+            schema as Parameters<typeof globalRegistryMock.get>[0],
+          ),
+        );
       }
 
       return fn({
