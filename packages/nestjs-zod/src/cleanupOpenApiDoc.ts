@@ -32,6 +32,29 @@ type OperationsObject = Exclude<
   undefined
 >;
 
+// Every HTTP method an OpenAPI path item can hold.  `query` is the operation
+// of the HTTP QUERY method, defined from OpenAPI 3.2.
+const OPERATION_KEYS = [
+  'get',
+  'put',
+  'post',
+  'delete',
+  'options',
+  'head',
+  'patch',
+  'trace',
+  'query',
+] as const;
+
+/**
+ * OpenAPI 3.1 and later write `null` as `{ type: 'null' }`.  Only 3.0 uses
+ * `nullable: true`.
+ */
+function versionOfDocument(openapi: string): '3.1' | '3.0' {
+  const [major = 0, minor = 0] = openapi.split('.').map(Number);
+  return major > 3 || (major === 3 && minor >= 1) ? '3.1' : '3.0';
+}
+
 /**
  * This function performs some post-processing on the OpenAPI document.  It
  * should only touch parts of the document that were generated from nestjs-zod
@@ -63,11 +86,7 @@ export function cleanupOpenApiDoc(
   const schemas: Record<string, DtoSchema> = {};
   const renames: Record<string, string> = {};
   const version =
-    versionParam === 'auto'
-      ? doc.openapi.startsWith('3.1')
-        ? '3.1'
-        : '3.0'
-      : versionParam;
+    versionParam === 'auto' ? versionOfDocument(doc.openapi) : versionParam;
 
   for (const [oldSchemaName, oldOpenapiSchema] of Object.entries(
     doc.components?.schemas || {},
@@ -92,17 +111,9 @@ export function cleanupOpenApiDoc(
   }
 
   const paths = deepmerge<typeof doc.paths>(doc.paths, {});
-  for (const { get, patch, post, delete: del, put, head } of Object.values(
-    paths,
-  )) {
-    for (const methodObject of Object.values({
-      get,
-      patch,
-      post,
-      del,
-      put,
-      head,
-    })) {
+  for (const pathItem of Object.values(paths)) {
+    const operations = pathItem as Record<string, OperationsObject | undefined>;
+    for (const methodObject of OPERATION_KEYS.map((key) => operations[key])) {
       fixRefsInBodies({ methodObject, renames });
 
       for (let i = 0; i < (methodObject?.parameters || []).length; i++) {

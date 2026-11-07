@@ -4,9 +4,11 @@ import {
   Controller,
   Get,
   Module,
+  Options,
   Param,
   Post,
   Query,
+  QueryMethod,
   Type,
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -3397,6 +3399,125 @@ describe('issue#368', () => {
   );
 });
 
+describe('operations other than get, post, put, patch, delete and head', () => {
+  testMany(
+    'cleans the parameters of a QUERY operation',
+    async ({ z }) => {
+      const Author = z
+        .object({
+          name: z.string().nullable(),
+        })
+        .meta({ id: 'Author' });
+
+      class QueryDto extends createZodDto(
+        z.object({
+          author: Author.nullable(),
+        }),
+      ) {}
+
+      @Controller()
+      class BookController {
+        constructor() {}
+
+        @QueryMethod()
+        searchBooks(@Query() query: QueryDto) {
+          return query;
+        }
+      }
+
+      const doc = await getSwaggerDocOpenApi32(BookController);
+      expect(get(doc, 'paths./.query.parameters')).toEqual([
+        {
+          in: 'query',
+          name: 'author',
+          required: true,
+          schema: {
+            anyOf: [{ $ref: '#/components/schemas/Author' }, { type: 'null' }],
+          },
+        },
+      ]);
+      expect(JSON.stringify(doc)).not.toContain(PREFIX);
+    },
+    ['4.0.0', 'latest'],
+  );
+
+  testMany(
+    'points the request body of a QUERY operation to the renamed schema',
+    async ({ z }) => {
+      class SearchDto extends createZodDto(
+        z
+          .object({
+            title: z.string(),
+          })
+          .meta({ id: 'BookSearch' }),
+      ) {}
+
+      @Controller()
+      class BookController {
+        constructor() {}
+
+        @QueryMethod()
+        searchBooks(@Body() search: SearchDto) {
+          return search;
+        }
+      }
+
+      const doc = await getSwaggerDocOpenApi32(BookController);
+      expect(
+        get(
+          doc,
+          'paths./.query.requestBody.content.application/json.schema.$ref',
+        ),
+      ).toBe('#/components/schemas/BookSearch');
+      expect(get(doc, 'components.schemas.BookSearch')).toBeDefined();
+      expect(JSON.stringify(doc)).not.toContain(PREFIX);
+    },
+    ['4.0.0', 'latest'],
+  );
+
+  testMany(
+    'cleans the parameters of an OPTIONS operation',
+    async ({ z }) => {
+      const Author = z
+        .object({
+          name: z.string().nullable(),
+        })
+        .meta({ id: 'Author' });
+
+      class QueryDto extends createZodDto(
+        z.object({
+          author: Author.nullable(),
+        }),
+      ) {}
+
+      @Controller()
+      class BookController {
+        constructor() {}
+
+        @Options()
+        describeBooks(@Query() query: QueryDto) {
+          return query;
+        }
+      }
+
+      const doc = await getSwaggerDoc(BookController);
+      expect(get(doc, 'paths./.options.parameters')).toEqual([
+        {
+          in: 'query',
+          name: 'author',
+          required: true,
+          schema: {
+            allOf: [{ $ref: '#/components/schemas/Author' }],
+            nullable: true,
+          },
+        },
+      ]);
+      expect(JSON.stringify(doc)).not.toContain(PREFIX);
+    },
+    ['4.0.0', 'latest'],
+  );
+});
+
 async function createApp(controllerClass: Type<unknown>) {
   @Module({
     imports: [],
@@ -3431,6 +3552,19 @@ async function getSwaggerDoc(
   } else {
     return doc;
   }
+}
+
+// `@nestjs/swagger` drops every QUERY operation from a document older than
+// OpenAPI 3.2, so a test with a QUERY route needs a 3.2 document.
+async function getSwaggerDocOpenApi32(controllerClass: Type<unknown>) {
+  const app = await createApp(controllerClass);
+
+  const doc = SwaggerModule.createDocument(
+    app,
+    new DocumentBuilder().setOpenAPIVersion('3.2.0').build(),
+  );
+  // @ts-expect-error - FIXME
+  return cleanupOpenApiDoc(doc);
 }
 
 async function testPayload(doc: unknown, payload: Record<string, unknown>) {
